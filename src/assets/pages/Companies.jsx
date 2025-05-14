@@ -42,7 +42,7 @@ const Companies = () => {
               <h3 className="text-2xl font-bold text-[#2F5A3D] mb-4">Temple Healthcare Services</h3>
               <p className="text-gray-700 mb-2">Affiliated Institutions:</p>
               <ul className="list-disc list-inside text-gray-600 ml-4 space-y-2">
-                <li>Sri Srigiri Shankara Mutt</li>
+                <li>Sri Sringeri Shankara Mutt</li>
                 <li>Sambheswar Swami Temple</li>
               </ul>
               <p className="text-gray-600 mt-4">Providing healthcare services through temple-based initiatives.</p>

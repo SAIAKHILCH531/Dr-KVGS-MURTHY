@@ -231,7 +231,7 @@ const HeroSection = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-semibold mb-6">Experience Holistic Healthcare</h2>
           <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Discover the benefits of Dr. KVGS Murthy's expertise in Ayurvedic and herbal medicine. Schedule a consultation today.
+            Discover the benefits of Dr. KVGS Murthy's expertise in allopathic Ayurvedic and herbal medicine. Schedule a consultation today.
           </p>
           <button 
             onClick={() => navigate('/contact')}
