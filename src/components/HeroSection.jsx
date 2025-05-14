@@ -231,14 +231,18 @@ const HeroSection = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-semibold mb-6">Experience Holistic Healthcare</h2>
           <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Discover the benefits of Dr. KVGS Murthy's expertise in allopathic Ayurvedic and herbal medicine. Schedule a consultation today.
+            Discover the benefits of Dr. KVGS Murthy's expertise in Allopathic Integrated in Ayurvedic and herbal medicine. Schedule a consultation today.
           </p>
-          <button 
-            onClick={() => navigate('/contact')}
-            className="bg-white text-[#2F5A3D] px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300"
-          >
-            Contact Dr Murty
-          </button>
+          <Button 
+                asChild 
+                variant="outline" 
+                size="lg" 
+                className="bg-white text-green border-white hover:bg-white px-6 py-3 rounded-md shadow-lg hover:shadow-xl transition-all"
+              >
+                <Link to="/contact">
+                  Contact Dr Murthy
+                </Link>
+              </Button>
         </div>
       </section>
     </div>
