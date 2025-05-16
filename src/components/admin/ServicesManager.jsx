@@ -217,6 +217,7 @@ const ServicesManager = () => {
               {categoryData.services.map((service, index) => (
                 <div key={index} className="space-y-4">
                   <div className="flex justify-between items-center">
+                    <br />
                     <span className="font-medium">{service.title || 'New Service'}</span>
                     <button
                       onClick={() => handleRemoveService(category, index)}

@@ -17,8 +17,8 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 bg-white rounded-lg shadow-lg p-6 mt-4 h-[calc(100vh-5rem)] flex flex-col">
-      <nav className="flex-1 flex flex-col">
+    <aside className="w-64 bg-white h-full flex flex-col">
+      <nav className="flex-1 flex flex-col p-6">
         {/* CMS Title */}
         <div className="mb-6 pb-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-[#2F5A3D]">CMS</h2>
@@ -49,10 +49,10 @@ const Sidebar = () => {
         </div>
 
         {/* Logout Button - Always visible at bottom */}
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="sticky bottom-0 pt-4 mt-4 border-t border-gray-200 bg-white">
           <button
             onClick={handleLogout}
-            className="w-full px-4 py-2.5 rounded-md transition-all duration-200 text-left font-medium text-red-600 hover:bg-red-50 hover:shadow-sm flex items-center justify-between"
+            className="w-full px-4 py-3 rounded-md transition-all duration-200 text-left font-medium text-red-600 hover:bg-red-50 hover:shadow-sm flex items-center justify-between"
           >
             <span>Logout</span>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
