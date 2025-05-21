@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import AdminLayout from './AdminLayout';
 
 const SocialServicesManager = () => {
   const [loading, setLoading] = useState(false); // Changed to false for immediate render
@@ -57,6 +56,7 @@ const SocialServicesManager = () => {
 
   const fetchContent = async () => {
     try {
+      setLoading(true);
       const docRef = doc(db, 'social_services', 'content');
       const docSnap = await getDoc(docRef);
       
@@ -65,7 +65,16 @@ const SocialServicesManager = () => {
       }
     } catch (error) {
       console.error('Error fetching content:', error);
-      showNotification('Failed to load content', 'error');
+      // More specific error message for permission issues
+      if (error.code === 'permission-denied') {
+        showNotification('Access denied. Please check your authentication status and permissions.', 'error');
+      } else {
+        showNotification('Unable to connect to the database. Please check your internet connection.', 'error');
+      }
+      // Keep using default content when there's an error
+      setContent(prev => prev);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,14 +82,20 @@ const SocialServicesManager = () => {
     setSaving(true);
     try {
       const docRef = doc(db, 'social_services', 'content');
-      await updateDoc(docRef, content);
-      showNotification('Content updated successfully', 'success');
+      // Validate content structure before saving
+      if (!content || typeof content !== 'object') {
+        throw new Error('Invalid content structure');
+      }
+      // Use setDoc instead of updateDoc to create the document if it doesn't exist
+      await setDoc(docRef, content);
+      showNotification('Content saved successfully', 'success');
     } catch (error) {
       console.error('Error saving content:', error);
-      showNotification('Failed to save content', 'error');
+      showNotification(`Failed to save content: ${error.message}`, 'error');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-  };
+};
 
   if (loading) {
     return <div className="p-4">Loading...</div>;
@@ -150,19 +165,21 @@ const SocialServicesManager = () => {
   };
 
   return (
-    <AdminLayout >
-        <main className="flex-1 bg-white rounded-lg shadow p-6">
-          <h1 className="text-3xl font-semibold text-[#2F5A3D]">Social Services Management</h1>
-          <br />
-          
-          {/* Notification */}
-          {notification.message && (
-            <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`}>
-              {notification.message}
-            </div>
-          )}
-          
+    < >
+       <main className="space-y-6 p-6">
+    <h1 className="text-3xl font-semibold text-[#2F5A3D]">Social Services Management</h1>
+    
+    {/* Notification - Moved from fixed positioning to relative */}
+    {notification.message && (
+      <div className={`p-4 rounded-lg shadow-lg ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`}>
+        {notification.message}
+      </div>
+    )}
+    
+    {/* All Sections Container */}
+    <div className="space-y-6">
           {/* Hero Section */}
+          <section className="border rounded-lg p-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h3 className="text-xl font-semibold mb-4">Hero Section</h3>
             <div className="space-y-4">
@@ -192,8 +209,11 @@ const SocialServicesManager = () => {
               </div>
             </div>
           </div>
+          </section>
+          
   
           {/* GENOME Foundation Section */}
+          <section className="border rounded-lg p-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">GENOME Foundation</h3>
@@ -243,12 +263,15 @@ const SocialServicesManager = () => {
                 <h4 className="font-medium mb-2">Activities</h4>
                 {content.genome.activities.map((activity, index) => (
                   <div key={index} className="mb-4 p-4 border rounded relative">
-                    <button
-                      onClick={() => removeActivity(index)}
-                      className="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                    >
-                      Remove
-                    </button>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium">{activity.title || 'New Activity'}</span>
+                      <button
+                        onClick={() => removeActivity(index)}
+                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
                     <input
                       type="text"
                       value={activity.title}
@@ -295,8 +318,10 @@ const SocialServicesManager = () => {
               </div>
             </div>
           </div>
+          </section>
   
           {/* Temple Charity Section */}
+          <section className="border rounded-lg p-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Temple Charity Services</h3>
@@ -333,14 +358,17 @@ const SocialServicesManager = () => {
               {/* Initiatives */}
               <div>
                 <h4 className="font-medium mb-2">Initiatives</h4>
-                {content.temple.initiatives.map((initiative, index) => (
+                {content.temple?.initiatives?.map((initiative, index) => (
                   <div key={index} className="mb-4 p-4 border rounded relative">
-                    <button
-                      onClick={() => removeInitiative(index)}
-                      className="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                    >
-                      Remove
-                    </button>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium">{initiative.title || 'New Initiative'}</span>
+                      <button
+                        onClick={() => removeInitiative(index)}
+                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
                     <input
                       type="text"
                       value={initiative.title}
@@ -398,8 +426,10 @@ const SocialServicesManager = () => {
               </div>
             </div>
           </div>
+          </section>
   
           {/* Upcoming Events Section */}
+          <section className="border rounded-lg p-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Upcoming Events</h3>
@@ -413,19 +443,25 @@ const SocialServicesManager = () => {
             <div className="space-y-4">
               {content.events.map((event, index) => (
                 <div key={index} className="mb-4 p-4 border rounded relative">
-                  <button
-                    onClick={() => removeEvent(index)}
-                    className="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">{event.title || 'New Event'}</span>
+                    <button
+                      onClick={() => removeEvent(index)}
+                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
                   <input
                     type="text"
                     value={event.title}
                     onChange={(e) => {
                       const newEvents = [...content.events];
                       newEvents[index] = { ...event, title: e.target.value };
-                      setContent({ ...content, events: newEvents });
+                      setContent({
+                        ...content,
+                        events: newEvents
+                      });
                     }}
                     className="w-full p-2 border rounded mb-2"
                     placeholder="Event Title"
@@ -464,6 +500,7 @@ const SocialServicesManager = () => {
                   />
                 </div>
               ))}
+            
             </div>
           </div>
   
@@ -476,9 +513,11 @@ const SocialServicesManager = () => {
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
+            </div>
+            </section>
           </div>
           </main>
-        </AdminLayout>
+        </>
       
     );
 };

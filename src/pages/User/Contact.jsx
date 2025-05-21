@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { collection, addDoc, doc, getDoc } from 'firebase/firestore'
+import { db } from '../../firebase/config'
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -8,8 +10,56 @@ const Contact = () => {
     subject: '',
     message: ''
   })
+  const [errors, setErrors] = useState({}) // Add this line to initialize errors state
+  const [contactContent, setContactContent] = useState({
+    hero: {
+      title: 'Contact Us',
+      subtitle: 'Get in touch with Dr. KVGS Murthy and KALAGA Herbal Research Labs'
+    },
+    contactInfo: {
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        country: ''
+      },
+      phone: '',
+      email: ''
+    }
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchContactContent = async () => {
+      try {
+        const docRef = doc(db, 'content', 'contact')
+        const docSnap = await getDoc(docRef)
+        
+        if (docSnap.exists()) {
+          setContactContent(docSnap.data())
+        }
+      } catch (error) {
+        console.error('Error fetching contact content:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchContactContent()
+  }, [])
+
+  const validatePhone = (phone) => {
+    // Allow empty since phone is optional
+    if (!phone) return true
+    
+    // Remove all non-digit characters for validation
+    const digits = phone.replace(/\D/g, '')
+    
+    // Check if the number has 10-12 digits (typical mobile/landline lengths)
+    return digits.length >= 10 && digits.length <= 12
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -17,14 +67,74 @@ const Contact = () => {
       ...prev,
       [name]: value
     }))
+    
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }))
+    }
   }
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const newErrors = {}
+
+    // Name validation (at least 2 words, minimum 3 characters each)
+    const nameWords = formData.name.trim().split(/\s+/)
+    if (nameWords.length < 2 || nameWords.some(word => word.length < 3)) {
+      newErrors.name = 'Please enter your full name (first & last name, minimum 3 characters each)'
+    }
+
+    // Email validation (using regex pattern)
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+    if (!emailPattern.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address'
+    }
+
+    // Phone validation (if provided)
+    if (formData.phone) {
+      const digits = formData.phone.replace(/\D/g, '')
+      if (digits.length < 10 || digits.length > 12) {
+        newErrors.phone = 'Phone number must be between 10-12 digits'
+      }
+    }
+
+    // Subject validation (minimum 5 characters)
+    if (formData.subject.trim().length < 5) {
+      newErrors.subject = 'Subject must be at least 5 characters long'
+    }
+
+    // Message validation (minimum 20 characters)
+    if (formData.message.trim().length < 20) {
+      newErrors.message = 'Message must be at least 20 characters long'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    // Validate all fields before submission
+    if (!validateForm()) {
+      return
+    }
+    
     setIsSubmitting(true)
 
-    setTimeout(() => {
-      console.log('Form submitted:', formData)
+    try {
+      // Add timestamp to the form data
+      const contactData = {
+        ...formData,
+        timestamp: new Date().toISOString()
+      }
+
+      // Save to Firestore
+      await addDoc(collection(db, 'contacts'), contactData)
+
+      // Reset form and show success modal
       setShowModal(true)
       setFormData({
         name: '',
@@ -33,8 +143,12 @@ const Contact = () => {
         subject: '',
         message: ''
       })
+    } catch (error) {
+      console.error('Error saving contact form:', error)
+      alert('There was an error sending your message. Please try again.')
+    } finally {
       setIsSubmitting(false)
-    }, 1500)
+    }
   }
 
   const Modal = () => {
@@ -63,15 +177,19 @@ const Contact = () => {
     )
   }
 
+  if (loading) {
+    return <div className="min-h-screen bg-[#f3f9f3] flex items-center justify-center">Loading...</div>
+  }
+
   return (
     <div className="min-h-screen bg-[#f3f9f3]">
       {/* Hero Section */}
       <section className="bg-[#2F5A3D] text-white py-14">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
+            <h1 className="text-4xl font-bold mb-4">{contactContent.hero.title}</h1>
             <p className="text-lg">
-              Get in touch with Dr. KVGS Murthy and KALAGA Herbal Research Labs
+              {contactContent.hero.subtitle}
             </p>
           </div>
         </div>
@@ -102,9 +220,9 @@ const Contact = () => {
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Address</h3>
                       <p className="text-white/80">
-                        16-4-17/9, M.G. Road<br />
-                        PALAKOL – 534 260<br />
-                        W.G.Dt., Andhra Pradesh, India
+                        {contactContent.contactInfo.address.street}<br />
+                        {contactContent.contactInfo.address.city}<br />
+                        {contactContent.contactInfo.address.state}, {contactContent.contactInfo.address.country}
                       </p>
                     </div>
                   </div>
@@ -118,7 +236,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Phone</h3>
-                      <p className="text-white/80">+91-7382-322-942</p>
+                      <p className="text-white/80">{contactContent.contactInfo.phone}</p>
                     </div>
                   </div>
 
@@ -131,7 +249,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Email</h3>
-                      <p className="text-white/80">technical@kalagaherbal.com</p>
+                      <p className="text-white/80">{contactContent.contactInfo.email}</p>
                     </div>
                   </div>
                 </div>
@@ -149,10 +267,11 @@ const Contact = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent"
-                        placeholder="Your name"
+                        className={`w-full px-4 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent`}
+                        placeholder="Your full name"
                         required
                       />
+                      {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
@@ -161,14 +280,16 @@ const Contact = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent"
-                        placeholder="Your email"
+                        className={`w-full px-4 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent`}
+                        placeholder="Your email address"
                         required
                       />
+                      {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number (Optional)</label>
                       <input
@@ -176,7 +297,7 @@ const Contact = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent"
+                        className={`w-full px-4 py-2 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent`}
                         placeholder="Your phone number"
                       />
                     </div>
@@ -187,7 +308,7 @@ const Contact = () => {
                         name="subject"
                         value={formData.subject}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent"
+                        className={`w-full px-4 py-2 border ${errors.subject ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent`}
                         placeholder="Message subject"
                         required
                       />
@@ -201,7 +322,7 @@ const Contact = () => {
                       value={formData.message}
                       onChange={handleChange}
                       rows="4"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent"
+                      className={`w-full px-4 py-2 border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#2F5A3D] focus:border-transparent`}
                       placeholder="Your message"
                       required
                     ></textarea>

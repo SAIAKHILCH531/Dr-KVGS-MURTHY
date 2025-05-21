@@ -1,9 +1,48 @@
-import { ArrowRight } from "lucide-react"
+
 import { Link } from "react-router-dom"
-import { Button } from "../../components/ui/button"
+import { Button } from "../../components/Button"
+import React, { useState, useEffect } from 'react'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '../../firebase/config'
 
+const Home = () => {
+  const [homeContent, setHomeContent] = useState({
+    hero: {
+      title: 'Dr. KVGS Murthy',
+      subtitle: 'Expert in Allopathic Integrated of Ayurvedic and Herbal',
+      description: 'Pioneering research-based herbal formulations through KALAGA Herbal Research Labs to enhance human health and wellbeing.'
+    },
+    welcome: {
+      title: 'Welcome to Dr. KVGS Murthy\'s Official Portfolio',
+      subtitle: 'Discover how Dr. Murthy\'s expertise in allopathic integrated of Ayurvedic and herbal medicine is transforming healthcare through research, innovation, and compassionate service.',
+      features: [
+        {
+          icon: '💻',
+          title: 'Expert in Ayurveda',
+          description: 'Combining modern medical knowledge with traditional Ayurvedic principles for holistic healthcare.'
+        },
+        // ... other features
+      ]
+    }
+  })
 
-const HeroSection = () => {
+  useEffect(() => {
+    const fetchHomeContent = async () => {
+      try {
+        const docRef = doc(db, 'settings', 'home')
+        const docSnap = await getDoc(docRef)
+        
+        if (docSnap.exists()) {
+          setHomeContent(docSnap.data())
+        }
+      } catch (error) {
+        console.error('Error fetching home content:', error)
+      }
+    }
+
+    fetchHomeContent()
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#f3f9f3]">
       {/* Hero Section */}
@@ -41,13 +80,13 @@ const HeroSection = () => {
         <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-3xl ml-8 md:ml-16 lg:ml-24">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
-              Dr. KVGS Murthy
+              {homeContent.hero.title}
             </h1>
             <p className="text-xl md:text-2xl text-white mb-6 drop-shadow-md">
-              Expert in Allopathic Integrated of Ayurvedic and Herbal 
+              {homeContent.hero.subtitle}
             </p>
             <p className="text-lg text-white/90 mb-8 max-w-2xl drop-shadow-sm">
-              Pioneering research-based herbal formulations through KALAGA Herbal Research Labs to enhance human health and wellbeing.
+              {homeContent.hero.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
@@ -57,7 +96,7 @@ const HeroSection = () => {
               >
                 <Link to="/about" className="inline-flex items-center">
                   Learn More About Dr. Murthy
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <span className="ml-2">→</span>
                 </Link>
               </Button>
               <Button 
@@ -80,53 +119,22 @@ const HeroSection = () => {
         <div className="container mx-auto px-4 w-full">
           <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-4">
-              <span className="text-[#2F5A3D]">Welcome to Dr. KVGS Murthy's </span>
-              <span className="text-[#B8860B]">Official Portfolio</span>
+              <span className="text-[#2F5A3D]">{homeContent.welcome.title}</span>
             </h2>
             <p className="text-[#4b6c4b] text-lg mb-12">
-              Discover how Dr. Murthy's expertise in allopathic integrated of Ayurvedic and herbal medicine is transforming healthcare through research, innovation, and compassionate service.
+              {homeContent.welcome.subtitle}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
-              <div className="p-6 bg-white rounded-lg shadow-sm text-center">
-                <div className="text-[#2F5A3D] text-3xl mb-4">💻</div>
-                <h3 className="text-xl font-semibold text-[#2F5A3D] mb-2">Expert in Ayurveda</h3>
-                <p className="text-[#4b6c4b] text-sm">
-                  Combining modern medical knowledge with traditional Ayurvedic principles for holistic healthcare.
-                </p>
-                <Link to="/about" className="text-[#2F5A3D] hover:text-[#4a8a5e] mt-4 inline-flex items-center">
-                  Learn More <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </div>
-              <div className="p-6 bg-white rounded-lg shadow-sm text-center">
-                <div className="text-[#B8860B] text-3xl mb-4">📦</div>
-                <h3 className="text-xl font-semibold text-[#2F5A3D] mb-2">Cardorium Plus</h3>
-                <p className="text-[#4b6c4b] text-sm">
-                  Research-based poly-herbal formulation to improve circulation and daily health.
-                </p>
-                <Link to="/products" className="text-[#2F5A3D] hover:text-[#4a8a5e] mt-4 inline-flex items-center">
-                  Learn More <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </div>
-              <div className="p-6 bg-white rounded-lg shadow-sm text-center">
-                <div className="text-[#2F5A3D] text-3xl mb-4">💚</div>
-                <h3 className="text-xl font-semibold text-[#2F5A3D] mb-2">Specialized Treatments</h3>
-                <p className="text-[#4b6c4b] text-sm">
-                  Personalized herbal treatments addressing various health concerns through KALAGA Herbal Research Labs.
-                </p>
-                <Link to="/services" className="text-[#2F5A3D] hover:text-[#4a8a5e] mt-4 inline-flex items-center">
-                  Learn More <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </div>
-              <div className="p-6 bg-white rounded-lg shadow-sm text-center">
-                <div className="text-[#B8860B] text-3xl mb-4">🤝</div>
-                <h3 className="text-xl font-semibold text-[#2F5A3D] mb-2">Social Initiatives</h3>
-                <p className="text-[#4b6c4b] text-sm">
-                  Active involvement in community service through GENOME Foundation and temple charity programs.
-                </p>
-                <Link to="/social-services" className="text-[#2F5A3D] hover:text-[#4a8a5e] mt-4 inline-flex items-center">
-                  Learn More <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </div>
+              {homeContent.welcome.features.map((feature, index) => (
+                <div key={index} className="p-6 bg-white rounded-lg shadow-sm text-center">
+                  <div className="text-[#2F5A3D] text-3xl mb-4">{feature.icon}</div>
+                  <h3 className="text-xl font-semibold text-[#2F5A3D] mb-2">{feature.title}</h3>
+                  <p className="text-[#4b6c4b] text-sm">{feature.description}</p>
+                  <Link to="/about" className="text-[#2F5A3D] hover:text-[#4a8a5e] mt-4 inline-flex items-center">
+                    Learn More <span className="ml-1">→</span>
+                  </Link>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -165,7 +173,7 @@ const HeroSection = () => {
               >
                 <Link to="/products" className="inline-flex items-center">
                   Discover Cardorium Plus
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <span className="ml-2">→</span>
                 </Link>
               </Button>
             </div>
@@ -204,7 +212,7 @@ const HeroSection = () => {
                   Dr. Murthy is an active member of GENOME Foundation, contributing to healthcare initiatives and research for the betterment of society.
                 </p>
                 <Link to="/social-services" className="text-[#2F5A3D] hover:text-[#4a8a5e] inline-flex items-center">
-                  Learn About His Contributions <ArrowRight className="ml-1 h-4 w-4" />
+                  Learn About His Contributions <span className="ml-1">→</span>
                 </Link>
               </div>
               <div className="p-8 bg-white rounded-lg shadow-sm">
@@ -218,7 +226,7 @@ const HeroSection = () => {
                   Dedicated to serving the community through temple charity initiatives, providing healthcare services to those in need.
                 </p>
                 <Link to="/social-services" className="text-[#2F5A3D] hover:text-[#4a8a5e] inline-flex items-center animate-pulse hover:animate-none">
-                  Explore Charitable Work <ArrowRight className="ml-1 h-4 w-4" />
+                  Explore Charitable Work <span className="ml-1">→</span>
                 </Link>
               </div>
             </div>
@@ -249,4 +257,4 @@ const HeroSection = () => {
   )
 }
 
-export default HeroSection
+export default Home

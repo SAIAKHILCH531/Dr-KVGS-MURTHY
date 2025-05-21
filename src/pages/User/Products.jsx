@@ -1,33 +1,124 @@
-import React, { useState } from 'react'
-import { Section } from '../../components/layout/Section'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore'
+import { db } from '../../firebase/config'
 
 const Products = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('formulation')
+  const [products, setProducts] = useState([])
+  const [productContent, setProductContent] = useState({
+    hero: {
+      title: '',
+      subtitle: ''
+    },
+    introduction: {
+      title: '',
+      description: [],
+      image: ''
+    },
+    benefits: {
+      title: '',
+      subtitle: '',
+      items: []
+    },
+    ingredients: {
+      title: '',
+      items: []
+    },
+    synergisticAction: {
+      title: '',
+      description: [],
+      qualityAssurance: {
+        title: '',
+        description: ''
+      }
+    },
+    usage: {
+      title: '',
+      dosage: {
+        title: '',
+        description: ''
+      }
+    }
+  })
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch product content
+        const docRef = doc(db, 'settings', 'product')
+        const docSnap = await getDoc(docRef)
+        
+        if (docSnap.exists()) {
+          setProductContent(docSnap.data())
+        }
+
+        // Fetch products list
+        const productsCollectionRef = collection(db, 'products')
+        const productsSnapshot = await getDocs(productsCollectionRef)
+        const productsList = productsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setProducts(productsList)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   return (
     <div>
-      {/* Hero Section */}
+      {/* Hero section */}
       <div className="bg-[#2F5A3D] text-white py-14 text-center">
-        <h1 className="text-4xl font-bold mb-4">Cardorium Plus</h1>
+        <h1 className="text-4xl font-bold mb-4">{productContent.hero.title}</h1>
         <p className="text-xl max-w-3xl mx-auto px-4">
-          Research-based poly-herbal formulation for improved circulation and heart health
+          {productContent.hero.subtitle}
         </p>
       </div>
 
+      {/* Products List Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold text-[#2F5A3D] mb-8 text-center">Our Products</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map(product => (
+              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                {product.image && (
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-[#2F5A3D] mb-2">{product.name}</h3>
+                  <p className="text-gray-600 mb-4">{product.description}</p>
+                  <button
+                    onClick={() => navigate('/contact')}
+                    className="bg-[#2F5A3D] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-all w-full"
+                  >
+                    Enquire Now
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Product Introduction */}
-      <Section className="py-12">
+      <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h2 className="text-2xl font-bold text-[#2F5A3D] mb-4">Advanced Herbal Formula for Cardiovascular Health</h2>
-              <p className="text-gray-600 mb-6">
-                Cardorium Plus is a scientifically formulated poly-herbal supplement developed by Dr. KVGS Murthy after years of research and clinical experience. This revolutionary product combines ancient Ayurvedic wisdom with modern scientific validation to create a comprehensive solution for cardiovascular function.
-              </p>
-              <p className="text-gray-600 mb-6">
-                Unlike conventional supplements, Cardorium Plus addresses the root causes of circulatory issues through a synergistic blend of premium herbs that work together to strengthen the cardiovascular system and promote overall wellness.
-              </p>
+            <div className="pl-0 md:pl-8 lg:pl-12">
+              <h2 className="text-2xl font-bold text-[#2F5A3D] mb-4">{productContent.introduction.title}</h2>
+              {productContent.introduction.description.map((paragraph, index) => (
+                <p key={index} className="text-gray-600 mb-6">{paragraph}</p>
+              ))}
               <div className="flex gap-4">
                 <button
                   onClick={() => navigate('/contact')}
@@ -44,47 +135,35 @@ const Products = () => {
               </div>
             </div>
             <div className="flex justify-center">
-              <img src="/images/cardomax.jpg.png" alt="Cardorium Plus" className="max-w-[300px]" />
+              <img src={productContent.introduction.image} alt={productContent.hero.title} className="max-w-[300px]" />
             </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* Key Benefits */}
-      <Section className="py-12 bg-[#f8faf8]">
+      <section className="py-12 bg-[#f8faf8]">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-[#2F5A3D] text-center mb-4">Key Benefits</h2>
+          <h2 className="text-3xl font-bold text-[#2F5A3D] text-center mb-4">{productContent.benefits.title}</h2>
           <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
-            Cardorium Plus offers a comprehensive approach to cardiovascular health through its unique formulation of traditional herbs backed by scientific research.
+            {productContent.benefits.subtitle}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-none mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center p-6 bg-white rounded-lg shadow-sm flex flex-col h-full justify-between">
-              <div>
-                <div className="text-[#2F5A3D] text-3xl mb-4">❤️</div>
-                <h3 className="text-xl font-semibold text-[#2F5A3D] mb-3">Heart Health Support</h3>
-                <p className="text-gray-600">Contains specialized herbs that help maintain healthy heart function and support overall cardiovascular health.</p>
+            {productContent.benefits.items.map((benefit, index) => (
+              <div key={index} className="text-center p-6 bg-white rounded-lg shadow-sm flex flex-col h-full justify-between">
+                <div>
+                  <div className="text-[#2F5A3D] text-3xl mb-4">{benefit.icon}</div>
+                  <h3 className="text-xl font-semibold text-[#2F5A3D] mb-3">{benefit.title}</h3>
+                  <p className="text-gray-600">{benefit.description}</p>
+                </div>
               </div>
-            </div>
-            <div className="text-center p-6 bg-white rounded-lg shadow-sm flex flex-col h-full justify-between">
-              <div>
-                <div className="text-[#2F5A3D] text-3xl mb-4">🔄</div>
-                <h3 className="text-xl font-semibold text-[#2F5A3D] mb-3">Improved Circulation</h3>
-                <p className="text-gray-600">Promotes blood flow throughout the body, helping to maintain healthy circulation while supporting the removal of waste products.</p>
-              </div>
-            </div>
-            <div className="text-center p-6 bg-white rounded-lg shadow-sm flex flex-col h-full justify-between">
-              <div>
-                <div className="text-[#2F5A3D] text-3xl mb-4">🛡️</div>
-                <h3 className="text-xl font-semibold text-[#2F5A3D] mb-3">Antioxidant Protection</h3>
-                <p className="text-gray-600">Rich in natural antioxidants that help neutralize free radicals and support cellular health in the cardiovascular system.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* Product Details */}
-      <Section className="py-12">
+      <section className="py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-[#2F5A3D] text-center mb-4">Product Details</h2>
           <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
@@ -250,10 +329,10 @@ const Products = () => {
             )}
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* Testimonials */}
-      <Section className="py-16 bg-white">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-[#2F5A3D] text-center mb-4">What People Are Saying</h2>
           <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
@@ -290,10 +369,10 @@ const Products = () => {
             </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* Call to Action */}
-      <Section className="py-16 bg-gradient-to-br from-[#B8860B] to-[#2F5A3D]">
+      <section className="py-16 bg-gradient-to-br from-[#B8860B] to-[#2F5A3D]">
         <div className="container mx-auto px-4 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">Experience the Benefits of Cardorium Plus</h2>
           <p className="text-xl max-w-3xl mx-auto mb-8">
@@ -314,7 +393,7 @@ const Products = () => {
             </button>
           </div>
         </div>
-      </Section>
+      </section>
     </div>
   )
 }

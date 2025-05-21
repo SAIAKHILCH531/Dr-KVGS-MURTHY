@@ -1,6 +1,4 @@
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cn } from "../../lib/utils"
 
 const buttonVariants = {
   default: "bg-[#2F5A3D] text-white hover:bg-[#2F5A3D]/90",
@@ -20,18 +18,17 @@ const Button = React.forwardRef(({
   className, 
   variant = "default", 
   size = "default", 
-  asChild = false, 
+  asChild,
   ...props 
 }, ref) => {
-  const Comp = asChild ? Slot : "button"
+  const baseClasses = "rounded-md font-medium transition-colors focus-visible:outline-none"
+  const variantClasses = buttonVariants[variant]
+  const sizeClasses = buttonSizes[size]
+  const combinedClasses = [baseClasses, variantClasses, sizeClasses, className].filter(Boolean).join(" ")
+
   return (
-    <Comp
-      className={cn(
-        "rounded-md font-medium transition-colors focus-visible:outline-none",
-        buttonVariants[variant],
-        buttonSizes[size],
-        className
-      )}
+    <button
+      className={combinedClasses}
       ref={ref}
       {...props}
     />

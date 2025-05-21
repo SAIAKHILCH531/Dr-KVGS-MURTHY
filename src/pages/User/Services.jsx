@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { Section } from '../../components/layout/Section'
-import { Card } from '../../components/ui/Card'
+import { Card } from '../../components/Card'
 import { useNavigate } from 'react-router-dom'
 
 const Services = () => {
@@ -144,7 +143,7 @@ const Services = () => {
 
   return (
     <div>
-      {/* Hero Section */}
+      {/* Hero section */}
       <div className="bg-[#2F5A3D] text-white py-10.5 text-center">
         <h1 className="text-4xl font-bold mb-4">Our Services</h1>
         <p className="text-xl max-w-3xl mx-auto px-4">
@@ -152,8 +151,8 @@ const Services = () => {
         </p>
       </div>
 
-      {/* Treatment Approach Section */}
-      <Section className="py-16 bg-[#f8faf8]">
+      {/* Treatment Approach section */}
+      <section className="py-16 bg-[#f8faf8]">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-[#2F5A3D] text-center mb-4">Our Treatment Approach</h2>
           <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
@@ -177,10 +176,10 @@ const Services = () => {
             />
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Specialized Services Section */}
-      <Section className="py-16">
+      {/* Specialized Services section */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-[#2F5A3D] text-center mb-4">Our Specialized Services</h2>
           <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
@@ -236,84 +235,87 @@ const Services = () => {
             ))}
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Treatment Process Section */}
-      <Section className="py-12 bg-[#f8faf8]">
+      {/* Treatment Process section */}
+      <section className="py-12 bg-[#f8faf8]">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-[#2F5A3D] text-center mb-4">Our Treatment Process</h2>
           <p className="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
             Experience a structured and effective healing journey with Dr. KVGS Murthy and KALAGA Herbal Research Labs.
           </p>
           <div className="relative max-w-4xl mx-auto">
-            {/* Vertical Line */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-[#2F5A3D] opacity-20"></div>
+            {/* Vertical Line - Hidden on mobile */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-[#2F5A3D] opacity-20 hidden md:block"></div>
             
-            {/* Step 1 */}
-            <div className="flex items-center mb-16">
-              <div className="w-1/2 pr-12 text-right">
-                <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Initial Consultation</h3>
-                <p className="text-gray-600">A comprehensive assessment of your health history, current conditions, and goals. Dr. Murthy evaluates your unique constitution according to Ayurvedic principles.</p>
+            {/* Steps Container */}
+            <div className="space-y-8 md:space-y-16">
+              {/* Step 1 */}
+              <div className="flex flex-col md:flex-row md:items-center">
+                <div className="md:w-1/2 md:pr-12 text-center md:text-right order-2 md:order-1 mt-4 md:mt-0">
+                  <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Initial Consultation</h3>
+                  <p className="text-gray-600">A comprehensive assessment of your health history, current conditions, and goals. Dr. Murthy evaluates your unique constitution according to Ayurvedic principles.</p>
+                </div>
+                <div className="relative flex justify-center md:justify-normal order-1 md:order-2">
+                  <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">1</div>
+                </div>
+                <div className="hidden md:block md:w-1/2 md:pl-12 order-3"></div>
               </div>
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">1</div>
+              
+              {/* Step 2 */}
+              <div className="flex flex-col md:flex-row md:items-center">
+                <div className="hidden md:block md:w-1/2 md:pr-12 order-1"></div>
+                <div className="relative flex justify-center md:justify-normal order-2">
+                  <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">2</div>
+                </div>
+                <div className="md:w-1/2 md:pl-12 text-center md:text-left order-3 mt-4 md:mt-0">
+                  <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Personalized Treatment Plan</h3>
+                  <p className="text-gray-600">Based on your assessment, Dr. Murthy develops a customized treatment protocol including herbal formulations, dietary recommendations, and lifestyle adjustments.</p>
+                </div>
               </div>
-              <div className="w-1/2 pl-12"></div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex items-center mb-16">
-              <div className="w-1/2 pr-12"></div>
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">2</div>
+              
+              {/* Step 3 */}
+              <div className="flex flex-col md:flex-row md:items-center">
+                <div className="md:w-1/2 md:pr-12 text-center md:text-right order-2 md:order-1 mt-4 md:mt-0">
+                  <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Treatment Implementation</h3>
+                  <p className="text-gray-600">Begin your healing journey with specialized herbal formulations provided by KALAGA Herbal Research Labs, alongside guided lifestyle modifications.</p>
+                </div>
+                <div className="relative flex justify-center md:justify-normal order-1 md:order-2">
+                  <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">3</div>
+                </div>
+                <div className="hidden md:block md:w-1/2 md:pl-12 order-3"></div>
               </div>
-              <div className="w-1/2 pl-12">
-                <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Personalized Treatment Plan</h3>
-                <p className="text-gray-600">Based on your assessment, Dr. Murthy develops a customized treatment protocol including herbal formulations, dietary recommendations, and lifestyle adjustments.</p>
+              
+              {/* Step 4 */}
+              <div className="flex flex-col md:flex-row md:items-center">
+                <div className="hidden md:block md:w-1/2 md:pr-12 order-1"></div>
+                <div className="relative flex justify-center md:justify-normal order-2">
+                  <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">4</div>
+                </div>
+                <div className="md:w-1/2 md:pl-12 text-center md:text-left order-3 mt-4 md:mt-0">
+                  <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Progress Monitoring</h3>
+                  <p className="text-gray-600">Regular follow-up consultations to assess your progress, adjust treatments as needed, and ensure optimal results on your path to wellness.</p>
+                </div>
               </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex items-center mb-16">
-              <div className="w-1/2 pr-12 text-right">
-                <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Treatment Implementation</h3>
-                <p className="text-gray-600">Begin your healing journey with specialized herbal formulations provided by KALAGA Herbal Research Labs, alongside guided lifestyle modifications.</p>
+              
+              {/* Step 5 */}
+              <div className="flex flex-col md:flex-row md:items-center">
+                <div className="md:w-1/2 md:pr-12 text-center md:text-right order-2 md:order-1 mt-4 md:mt-0">
+                  <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Maintenance & Prevention</h3>
+                  <p className="text-gray-600">Once primary health goals are achieved, Dr. Murthy provides ongoing support with preventive care strategies to maintain optimal health and prevent recurrence.</p>
+                </div>
+                <div className="relative flex justify-center md:justify-normal order-1 md:order-2">
+                  <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">5</div>
+                </div>
+                <div className="hidden md:block md:w-1/2 md:pl-12 order-3"></div>
               </div>
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">3</div>
-              </div>
-              <div className="w-1/2 pl-12"></div>
-            </div>
-
-            {/* Step 4 */}
-            <div className="flex items-center mb-16">
-              <div className="w-1/2 pr-12"></div>
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">4</div>
-              </div>
-              <div className="w-1/2 pl-12">
-                <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Progress Monitoring</h3>
-                <p className="text-gray-600">Regular follow-up consultations to assess your progress, adjust treatments as needed, and ensure optimal results on your path to wellness.</p>
-              </div>
-            </div>
-
-            {/* Step 5 */}
-            <div className="flex items-center">
-              <div className="w-1/2 pr-12 text-right">
-                <h3 className="font-semibold text-[#2F5A3D] text-xl mb-2">Maintenance & Prevention</h3>
-                <p className="text-gray-600">Once primary health goals are achieved, Dr. Murthy provides ongoing support with preventive care strategies to maintain optimal health and prevent recurrence.</p>
-              </div>
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-[#2F5A3D] text-white text-xl font-bold flex items-center justify-center z-10 relative">5</div>
-              </div>
-              <div className="w-1/2 pl-12"></div>
             </div>
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Begin Your Healing Journey Section */}
-      <Section className="py-16 bg-gradient-to-br from-[#B8860B]  to-[#2F5A3D]">
+      {/* Begin Your Healing Journey section */}
+      <section className="py-16 bg-gradient-to-br from-[#B8860B]  to-[#2F5A3D]">
         <div className="container mx-auto px-4 text-center text-white">
           <h2 className="text-3xl font-bold mb-6">Begin Your Healing Journey Today</h2>
           <p className="text-xl max-w-3xl mx-auto mb-8">
@@ -322,7 +324,7 @@ const Services = () => {
          
          
         </div>
-      </Section>
+      </section>
     </div>
   )
 }
