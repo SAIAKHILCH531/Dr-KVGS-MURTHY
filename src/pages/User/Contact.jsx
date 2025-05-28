@@ -18,13 +18,13 @@ const Contact = () => {
     },
     contactInfo: {
       address: {
-        street: '',
+        street: '"PALAKOL – 534 260',
         city: '',
-        state: '',
-        country: ''
+        state: 'W.G.Dt., Andhra Pradesh',
+        country: 'India'
       },
-      phone: '',
-      email: ''
+      phone: '+91-7382-322-942',
+      email: 'technical@kalagaherbal.com'
     }
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
